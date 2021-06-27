@@ -3,6 +3,8 @@
 #include <iostream>
 #include <list>
 #include <vector>
+#include <fstream>
+#include <string>
 
 class Node{
   public:
@@ -41,12 +43,16 @@ public:
     ~Graph();
     Node addNode(int value);
     void addEdge(Node v, Node w); //Function to add an edge to the graph
-    //void printGraph(Graph g);
-    friend std::ostream& operator <<(std::ostream &out, Graph g);
+    void addEdge(int id1, int id2);
+    friend std::ostream& operator <<(std::ostream &out, Graph &g);
     Node& operator [](int id);
+    std::vector<Node> getNodes();
 
 private:
   std::vector<Node> nodes; //pointers to an array of adjacency for the arcs
 };
+
+void generateRandomDAG(Graph &g, int N);
+void writeGraphImage(Graph &g, std::string filename);
 
 #endif
