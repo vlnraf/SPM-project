@@ -7,7 +7,7 @@ all: main
 main: main.o graph.o
 	$(CXX) $(CXXFLAGS) -o main main.o graph.o
 
-out/graph.o: graph.cpp graph.hpp
+graph.o: graph.cpp graph.hpp
 	$(CXX) $(CXXFLAGS) -c graph.cpp
 
 main.o: main.cpp graph.hpp

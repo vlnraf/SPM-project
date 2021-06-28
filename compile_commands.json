@@ -1,0 +1,34 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-std=c++14",
+      "-Wall",
+      "-I",
+      "include",
+      "-o",
+      "bin/main",
+      "src/graph.cpp"
+    ],
+    "directory": "/home/raffaele/Documents/Parallel/SPM-project",
+    "file": "/home/raffaele/Documents/Parallel/SPM-project/src/graph.cpp",
+    "output": "/home/raffaele/Documents/Parallel/SPM-project/bin/main"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-std=c++14",
+      "-Wall",
+      "-I",
+      "include",
+      "-o",
+      "bin/main",
+      "src/main.cpp"
+    ],
+    "directory": "/home/raffaele/Documents/Parallel/SPM-project",
+    "file": "/home/raffaele/Documents/Parallel/SPM-project/src/main.cpp",
+    "output": "/home/raffaele/Documents/Parallel/SPM-project/bin/main"
+  }
+]
