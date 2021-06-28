@@ -1,7 +1,7 @@
 #include "graph.hpp"
 
 #define MAX_VALUE 50
-#define PERCENT 30
+#define PERCENT 50
 
 Graph::Graph(){}
 Graph::~Graph(){}
@@ -67,8 +67,12 @@ void writeGraphImage(Graph &g, std::string filename){
   f << "digraph {" << std::endl;
 
   for (int i=0; i<(int) nodes.size(); i++){
+    // if wanna display not connected nodes too add this for
+    // if(nodes[i].getDestination().size() < 1){
+    // f << nodes[i].getID() << ";" << std::endl;
+    // }
     for(auto x : nodes[i].getDestination()){
-      f << nodes[i].getID() << " -> " << x.getID() << std::endl;
+      f << nodes[i].getID() << " -> " << x.getID() << ";" << std::endl;
     }
   }
   f << "}" << std::endl;

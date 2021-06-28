@@ -13,7 +13,7 @@ int main(int argc, char* argv[]){
   }
 
   Graph g;
-  std::string filename = "image.gv";
+  std::string filename = "image_graph0/image.gv";
   int N = atoi(argv[2]);
 
   generateRandomDAG(g, N);
@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
 
   writeGraphImage(g, filename);
 
-  std::cout << g << std::endl;
+  //std::cout << g << std::endl;
 
   return 0;
 }
