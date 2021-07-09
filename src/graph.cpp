@@ -1,7 +1,7 @@
 #include "graph.hpp"
 
-#define MAX_VALUE 1
-#define PERCENT 1
+#define MAX_VALUE 5
+#define PERCENT 30
 
 Graph::Graph(){}
 Graph::~Graph(){}

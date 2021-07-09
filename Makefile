@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++14 -Wall -O3
+CXXFLAGS = -std=c++17 -Wall -O3
 LDFLAGS = -pthread -fopenmp
 
 BIN := bin
