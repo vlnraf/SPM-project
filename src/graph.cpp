@@ -1,7 +1,11 @@
 #include "graph.hpp"
 
-#define MAX_VALUE 5
-#define PERCENT 30
+#define MAX_VALUE 50
+#define PERCENT 5
+#define MIN_PER_RANK 10 // How fat should be the graph
+#define MAX_PER_RANK 10
+#define MIN_RANKS 10 // How tall should be the graph
+#define MAX_RANKS 10
 
 Graph::Graph(){}
 Graph::~Graph(){}

@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -O3
-LDFLAGS = -pthread -fopenmp
+LDFLAGS = -pthread
 
 BIN := bin
 SRC := src

@@ -1,0 +1,110 @@
+
+void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw){
+  std::vector<std::thread> tids;
+  int turn = 0;
+
+  Barrier barrier(nw);
+
+  std::vector<std::queue<int>> fs(nw); //vector of queue to assign the queue at each thread
+  std::vector<std::queue<int>> ns(nw);   //same but this is used for update the next frontiear
+  std::vector<std::atomic<bool>> visited(g.getNodes().size());
+  Node n = g[src];
+  visited[n.getID()] = true;
+  if(n.getValue() == val) count++;
+  std::vector<Node> tmp = n.getDestination();
+  int tmpSize = tmp.size();
+
+  for(int i=0; i<tmpSize; i++){
+    fs[turn].push(tmp[i].getID());
+    visited[tmp[i].getID()] = true;
+    turn = (turn + 1) % nw;
+  }
+
+  //auto jobStealing = [&](std::queue<int> q){
+  ////  done = true;
+  //  jobStealingLocker.lock();
+  //  for (int i=0; i<nw; i++){
+  // //   done |= !fs[i].empty();
+  //    if(fs[i].size() > 4){
+  //      std::cout<< " stealing" << std::endl;
+  //      for (int i=0; i<(int)fs[i].size()/2; i++){
+  //        q.push(fs[i].front());
+  //        fs[i].pop();
+  //      }
+  //      jobStealingLocker.unlock();
+  //      return;
+  //    }
+  //  }
+  //  jobStealingLocker.unlock();
+  //};
+
+  std::atomic<int> counter;
+  counter = nw;
+
+  auto myjob = [&](int tid){
+    /* function that each node of the farm compute
+     */ 
+    bool done = false;
+    int level = 0;
+    
+
+    while(!done){ //while the queue assigned to the thread is not empty
+      //std::this_thread::sleep_for(std::chrono::seconds(3));
+      while(!fs[tid].empty()){
+        //nodeLock.lock();
+        Node n = g[fs[tid].front()];
+        if(n.getValue() == val) count++;
+        fs[tid].pop();
+        //nodeLock.unlock();
+
+        //Uncomment and don't use atomic vector of bool!!!
+        //visitedNodes.lock();
+        for(auto neighbor: n.getDestination()){
+          if(!visited[neighbor.getID()]){
+            visited[neighbor.getID()] = true;
+            ns[tid].push(neighbor.getID());
+            }
+        }
+        //visitedNodes.unlock();
+      }
+      //barrier.barrier_wait(tid);
+      fs[tid] = ns[tid];
+      //messages.lock();
+      //std::cout<<"quque size of thread(" << tid << ") :" << fs[tid].size()<< " | done = " << done << "| Level : " << level <<std::endl;
+      //messages.unlock();
+      while(!ns[tid].empty()) ns[tid].pop();
+      level ++;
+      if(!fs[tid].empty()) done=false;
+      else{ 
+        //counter--;
+        done=true;
+        //barrier.barrier_wait(tid);
+        //counter++;
+        //do{
+        //  barrier.barrier_wait(tid);
+        //}while(counter!=nw);
+        //while(1){
+
+        //  //std::this_thread::sleep_for(std::chrono::seconds(1));
+        //  barrier.barrier_wait(tid);
+        //  //messages.lock();
+        //  //std::cout<<"( " << tid << ") I am here:" << counter<<std::endl;
+        //  //messages.unlock();
+        //  if(counter == 0){
+        //    //barrier.barrier_wait(tid);
+        //    done = true;
+        //    break;
+        //  }
+        //}
+      }
+    }
+    //std::cout<<tid<< " BYE BYE" << std::endl;
+  };
+
+  for(int i=0; i<nw; i++){
+    tids.push_back(std::thread(myjob, i));
+  }
+  for(std::thread& t: tids){
+    t.join();
+  }
+}
