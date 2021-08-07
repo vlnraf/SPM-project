@@ -51,7 +51,7 @@ void bfs(Graph &g, int src, int val, std::atomic<int> &count){
   }
 }
 
-void parallelBFS2(Graph &g, int src, int val, std::atomic<int> &count, int nw);
+void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw);
 
 int main(int argc, char* argv[]){
 
@@ -71,42 +71,41 @@ int main(int argc, char* argv[]){
   std::atomic<int> count;
   long sequential, parallel;
 
-  std::vector<std::thread> tids;
-
   {
     utimer t("graph gen");
     generateRandomDAG(g, N);
+    //generateGraph(g);
+    //std::cout << g << std::endl;
   }
 
   {
     utimer t("bfs", &sequential);
     count=0;
     bfs(g,src,value, std::ref(count));
-    std::cout << "Sequential, starting from node " << "(" << src << ")" << " the occurences of" << " (" << value << ") are : " << count << std::endl;
   }
+  std::cout << "Sequential, starting from node " << "(" << src << ")" << " the occurences of" << " (" << value << ") are : " << count << std::endl;
 
   {
     utimer r("par bfs", &parallel);
     count=0;
-    parallelBFS2(g,src,value,std::ref(count),nw);
-    std::cout << "Parallel, starting from node " << "(" << src << ")" << "the occurrences of" << " (" << value << ") are : " << count << std::endl;
+    parallelBFS(g,src,value,std::ref(count),nw);
     //std::cout << count <<std::endl;
   }
+  std::cout << "Parallel, starting from node " << "(" << src << ")" << " the occurrences of" << " (" << value << ") are : " << count << std::endl;
   std::cout << "Speedup (" << nw << ") = " << (float) sequential/parallel << std::endl;
 
   return 0;
 }
 
-std::mutex visitedNodes;
-std::mutex messagesLock;
-std::mutex nodeLock;
+//std::mutex visitedNodes;
+//std::mutex messagesLock;
+//std::mutex nodeLock;
 
 
-void parallelBFS2(Graph &g, int src, int val, std::atomic<int> &count, int nw){
+void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw){
 
   std::vector<std::queue<int>> fs(nw); //vector of queue to assign the queue at each thread
   std::vector<std::queue<int>> ns(nw);   //same but this is used for update the next frontiear
-  //std::vector<std::atomic<bool>> visited(g.getNodes().size()); //Use it if you have problem with result
   std::vector<bool> visited(g.getNodes().size());
   std::unordered_set<int> vis;
 

@@ -15,9 +15,16 @@ class Node{
     Node(int value) : ID(currID++){
       this-> value = value;
     }
+    Node(int id, int value) : ID(id){
+      this->value = value;
+    }
 
     int getValue(){
       return value;
+    }
+
+    void setValue(int value){
+      this->value = value;
     }
 
     int getID(){
@@ -44,6 +51,7 @@ public:
     Graph();
     ~Graph();
     Node addNode(int value);
+    Node addNode(int id, int value);
     void addEdge(Node v, Node w); //Function to add an edge to the graph
     void addEdge(int id1, int id2);
     friend std::ostream& operator <<(std::ostream &out, Graph &g);
@@ -55,6 +63,7 @@ private:
 };
 
 void generateRandomDAG(Graph &g, int N);
+void generateGraph(Graph &g);
 void writeGraphImage(Graph &g, std::string filename);
 
 #endif

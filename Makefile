@@ -9,9 +9,9 @@ INCLUDE := -I include
 EXECUTABLE := main
 BFS := bfs
 
-all: $(BIN)/$(EXECUTABLE)
+all: $(BIN)/graph_search
 
-$(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
+$(BIN)/graph_search: $(SRC)/graph.cpp $(SRC)/graph_search.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) $^ -o $@ $(LDFLAGS)
 
 
