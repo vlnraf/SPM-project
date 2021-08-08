@@ -1,8 +1,8 @@
 #include <algorithm>
 #include "graph.hpp"
 
-#define MAX_VALUE 1
-#define PERCENT 20
+#define MAX_VALUE 50
+#define PERCENT 5
 #define MIN_PER_RANK 50 // How fat should be the graph
 #define MAX_PER_RANK 50
 #define MIN_RANKS 500 // How tall should be the graph
@@ -27,11 +27,11 @@ Node Graph::addNode(int id, int value){
 
 void Graph::addEdge(Node v, Node w){
   int v_id = v.getID();
-  this->nodes.at(v_id).setDestination(w);
+  this->nodes.at(v_id).setDestination(&w);
 }
 
 void Graph::addEdge(int id1, int id2){
-  this->nodes.at(id1).setDestination(nodes.at(id2));
+  this->nodes.at(id1).setDestination(&nodes.at(id2));
 }
 
 Node& Graph::operator [](int id){
@@ -50,7 +50,7 @@ std::ostream& operator <<(std::ostream &out, Graph &g){
       out << "Isolated Vertex! ";
     }
     for (auto x : g.nodes[i].getDestination()){
-      out << i << "->" << x.getID() << ',';
+      out << i << "->" << x->getID() << ',';
     }
     out << std::endl;
   }
@@ -112,7 +112,7 @@ void writeGraphImage(Graph &g, std::string filename){
     // f << nodes[i].getID() << ";" << std::endl;
     // }
     for(auto x : nodes[i].getDestination()){
-      f << nodes[i].getID() << " -> " << x.getID() << ";" << std::endl;
+      f << nodes[i].getID() << " -> " << x->getID() << ";" << std::endl;
     }
   }
   f << "}" << std::endl;

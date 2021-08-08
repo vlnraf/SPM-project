@@ -25,8 +25,10 @@ void bfs(Graph &g, int src, int val, std::atomic<int> &count, long &sequential){
   std::queue<int> ns;
   //std::map<int, bool> visited;
   std::vector<bool> visited(g.getNodes().size());
+  //std::unordered_set<int> vis;
   fs.push(src);
   visited[src] = true;
+  //vis.insert(src);
   int level = 0;
 
   {
@@ -41,9 +43,14 @@ void bfs(Graph &g, int src, int val, std::atomic<int> &count, long &sequential){
 
         for(auto neighbor : node.getDestination()){
         //std::cout << "level(" << level << ")" << node.getID() << "->" << neighbor.getID() << std::endl;
-        if(!visited[neighbor.getID()]){
-          ns.push(neighbor.getID());
-          visited[neighbor.getID()] = true;
+        //if(vis.find(neighbor->getID()) == vis.end()){
+        //  ns.push(neighbor->getID());
+        //  vis.insert(neighbor->getID());
+        //}
+
+        if(!visited[neighbor->getID()]){
+          ns.push(neighbor->getID());
+          visited[neighbor->getID()] = true;
           }
         }
       }
@@ -54,14 +61,16 @@ void bfs(Graph &g, int src, int val, std::atomic<int> &count, long &sequential){
   }
 }
 
+std::mutex visitedNodes;
+
 void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw, long &parallel){
 
     std::vector<std::queue<int>> fs(nw); //vector of queue to assign the queue at each thread
     std::vector<std::queue<int>> ns(nw);   //same but this is used for update the next frontiear
-    //std::vector<bool> visited(g.getNodes().size());
+    std::vector<bool> visited(g.getNodes().size());
     std::vector<int> frontier;
     std::vector<std::thread> tids(nw);
-    std::unordered_set<int> vis;
+    //std::unordered_set<int> vis;
 
     int level = 0;
     auto myjob = [&](std::vector<int> &frontier, int tid){
@@ -80,16 +89,16 @@ void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw, lo
 
           for(auto neighbor: n.getDestination()){
             //visitedNodes.lock();
-            if(vis.find(neighbor.getID()) == vis.end()){
-              ns[tid].push(neighbor.getID());
-            }
-            //if(!visited[neighbor.getID()]){
-            //  //visitedNodes.lock();
-            //  visited[neighbor.getID()] = true;
-            //  //visitedNodes.unlock();
-            //  ns[tid].push(neighbor.getID());
-            //  //frontier.push_back(neighbor.getID());
-            //  }
+            //if(vis.find(neighbor->getID()) == vis.end()){
+            //  ns[tid].push(neighbor->getID());
+            //}
+            if(!visited[neighbor->getID()]){
+              //visitedNodes.lock();
+              //visited[neighbor->getID()] = true;
+              //visitedNodes.unlock();
+              ns[tid].push(neighbor->getID());
+              //frontier.push_back(neighbor.getID());
+              }
             //visitedNodes.unlock();
           }
         }
@@ -102,17 +111,17 @@ void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw, lo
   {
     utimer parallel_time("Parallel time", &parallel);
 
-  std::vector<Node> tmp;
+  std::vector<Node*> tmp;
   Node n = g[src];
-  //visited[n.getID()] = true;
-  vis.insert(n.getID());
+  visited[n.getID()] = true;
+  //vis.insert(n.getID());
   if(n.getValue() == val) count++;
   tmp = n.getDestination();
 
   for(int i=0; i<(int) tmp.size(); i++){
-    frontier.push_back(tmp[i].getID());
-    //visited[tmp[i].getID()] = true;
-    vis.insert(tmp[i].getID());
+    frontier.push_back(tmp[i]->getID());
+    visited[tmp[i]->getID()] = true;
+    //vis.insert(tmp[i]->getID());
   }
   level++;
   tmp.clear();
@@ -125,8 +134,8 @@ void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw, lo
       //utimer dive_work("time to compute the work to divide");
       for(int i=0; i<(int) frontier.size(); i++){
         fs[turn].push(frontier[i]);
-        //visited[frontier[i]] = true;
-        vis.insert(frontier[i]);
+        visited[frontier[i]] = true;
+        //vis.insert(frontier[i]);
         turn = (turn + 1) % nw;
       }
     }
@@ -150,8 +159,10 @@ void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw, lo
       //utimer frontier_time("time to compute new frontier");
       for(int i=0; i<nw; i++){
         while(!ns[i].empty()){
-          if(vis.find(ns[i].front()) == vis.end()){
-            vis.insert(ns[i].front());
+          //if(vis.find(ns[i].front()) == vis.end()){
+          if(!visited[ns[i].front()]){
+            //vis.insert(ns[i].front());
+            visited[ns[i].front()] = true;
             frontier.push_back(ns[i].front());
           }
           ns[i].pop();

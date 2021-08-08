@@ -31,18 +31,18 @@ class Node{
       return ID;
     }
 
-    void setDestination(Node des){
+    void setDestination(Node *des){
       destination.push_back(des);
     }
 
-    std::vector<Node> getDestination(){
+    std::vector<Node*> getDestination(){
       return destination;
     }
 
   private:
     static int currID;
     int value;
-    std::vector<Node> destination;
+    std::vector<Node*> destination;
 };
 
 class Graph{

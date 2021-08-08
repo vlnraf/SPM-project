@@ -5,15 +5,17 @@
       "-c",
       "-std=c++17",
       "-Wall",
+      "-O3",
       "-I",
       "include",
+      "-pthread",
       "-o",
-      "bin/main",
+      "bin/graph_search",
       "src/graph.cpp"
     ],
     "directory": "/home/raffaele/Documents/Parallel/SPM-project",
     "file": "/home/raffaele/Documents/Parallel/SPM-project/src/graph.cpp",
-    "output": "/home/raffaele/Documents/Parallel/SPM-project/bin/main"
+    "output": "/home/raffaele/Documents/Parallel/SPM-project/bin/graph_search"
   },
   {
     "arguments": [
@@ -21,14 +23,16 @@
       "-c",
       "-std=c++17",
       "-Wall",
+      "-O3",
       "-I",
       "include",
+      "-pthread",
       "-o",
-      "bin/main",
-      "src/main.cpp"
+      "bin/graph_search",
+      "src/graph_search.cpp"
     ],
     "directory": "/home/raffaele/Documents/Parallel/SPM-project",
-    "file": "/home/raffaele/Documents/Parallel/SPM-project/src/main.cpp",
-    "output": "/home/raffaele/Documents/Parallel/SPM-project/bin/main"
+    "file": "/home/raffaele/Documents/Parallel/SPM-project/src/graph_search.cpp",
+    "output": "/home/raffaele/Documents/Parallel/SPM-project/bin/graph_search"
   }
 ]
