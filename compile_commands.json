@@ -34,5 +34,45 @@
     "directory": "/home/raffaele/Documents/Parallel/SPM-project",
     "file": "/home/raffaele/Documents/Parallel/SPM-project/src/graph_search.cpp",
     "output": "/home/raffaele/Documents/Parallel/SPM-project/bin/graph_search"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-std=c++17",
+      "-Wall",
+      "-O3",
+      "-I",
+      "libraries/fastflow",
+      "-I",
+      "include",
+      "-pthread",
+      "-o",
+      "bin/ff_graph_search",
+      "src/graph.cpp"
+    ],
+    "directory": "/home/raffaele/Documents/Parallel/SPM-project",
+    "file": "/home/raffaele/Documents/Parallel/SPM-project/src/graph.cpp",
+    "output": "/home/raffaele/Documents/Parallel/SPM-project/bin/ff_graph_search"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-std=c++17",
+      "-Wall",
+      "-O3",
+      "-I",
+      "libraries/fastflow",
+      "-I",
+      "include",
+      "-pthread",
+      "-o",
+      "bin/ff_graph_search",
+      "src/ff_graph_search.cpp"
+    ],
+    "directory": "/home/raffaele/Documents/Parallel/SPM-project",
+    "file": "/home/raffaele/Documents/Parallel/SPM-project/src/ff_graph_search.cpp",
+    "output": "/home/raffaele/Documents/Parallel/SPM-project/bin/ff_graph_search"
   }
 ]

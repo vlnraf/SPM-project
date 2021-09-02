@@ -1,12 +1,8 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 #include <iostream>
-#include <list>
-#include <vector>
-#include <queue>
-#include <map>
 #include <fstream>
-#include <string>
+#include <vector>
 
 class Node{
   public:
@@ -56,6 +52,7 @@ public:
     void addEdge(int id1, int id2);
     friend std::ostream& operator <<(std::ostream &out, Graph &g);
     Node& operator [](int id);
+    Node& at(int id);
     std::vector<Node> getNodes();
 
 private:

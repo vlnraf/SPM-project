@@ -1,3 +1,6 @@
+#ifndef U_TIMER_H
+#define U_TIMER_H
+
 #include <iostream>
 #include <chrono>
 
@@ -35,3 +38,4 @@ public:
   }
 };
 
+#endif

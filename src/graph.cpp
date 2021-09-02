@@ -1,4 +1,4 @@
-#include <algorithm>
+//#include <algorithm>
 #include "graph.hpp"
 
 #define MAX_VALUE 50
@@ -35,6 +35,10 @@ void Graph::addEdge(int id1, int id2){
 }
 
 Node& Graph::operator [](int id){
+  return nodes[id];
+}
+
+Node& Graph::at(int id){
   return nodes[id];
 }
 

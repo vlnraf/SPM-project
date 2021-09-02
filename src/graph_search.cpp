@@ -1,16 +1,15 @@
-#include <iostream>
+//#include <iostream>
 #include <thread>
-#include <mutex>
+#include <queue>
+//#include <mutex>
 #include <atomic>
-#include <set>
-#include <unordered_set>
+//#include <set>
+//#include <unordered_set>
 
-#include "barrier.hpp"
 #include "graph.hpp"
 #include "Utimer.hpp"
-#include "Queque.hpp"
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
 #define DEBUG_MSG(str) std::cout << str << std::endl;
@@ -18,7 +17,7 @@
 #define DEBUG_MSG(str) 
 #endif
 
-int Node::currID = 0; //Initialize the id from where you want to start
+int Node::currID = 0; //Initialize the id for the graph
 
 void bfs(Graph &g, int src, int val, std::atomic<int> &count, long &sequential){
   std::queue<int> fs;
@@ -61,7 +60,7 @@ void bfs(Graph &g, int src, int val, std::atomic<int> &count, long &sequential){
   }
 }
 
-std::mutex visitedNodes;
+//std::mutex visitedNodes;
 
 void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw, long &parallel){
 
