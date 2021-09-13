@@ -1,6 +1,0 @@
-dot -Tpng "filename" -o "filename.png"
-
-To display
-use display or feh:
-- diplay "filename.png"
-- feh "filename.png"

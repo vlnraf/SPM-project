@@ -1,12 +1,9 @@
-//#include <algorithm>
+#include <fstream>
+#include <string.h>
 #include "graph.hpp"
 
 #define MAX_VALUE 50
 #define PERCENT 5
-#define MIN_PER_RANK 50 // How fat should be the graph
-#define MAX_PER_RANK 50
-#define MIN_RANKS 500 // How tall should be the graph
-#define MAX_RANKS 500
 
 Graph::Graph(){}
 Graph::~Graph(){}
@@ -46,7 +43,6 @@ std::vector<Node> Graph::getNodes(){
   return this->nodes;
 }
 
-//std::ostream& Graph::operator <<(std::ostream &out, Graph &g){
 std::ostream& operator <<(std::ostream &out, Graph &g){
   for (int i=0; i < (int)g.nodes.size(); i++){
     out << "\nAdjacency list of vertex " << i << std::endl;
@@ -75,33 +71,26 @@ void generateRandomDAG(Graph &g, int N){
   }
 }
 
-//void generateGraph(Graph &g){
-//  int i, j, k,nodes = 0;
-//
-//  int ranks = MIN_RANKS + (rand() % (MAX_RANKS - MIN_RANKS + 1));
-//
-//  for(int i=0; i<30010; i++){
-//    g.addNode(rand() % MAX_VALUE);
-//  }
-//
-//  for (i=0; i<ranks; i++)
-//    {
-//      int new_nodes = MIN_PER_RANK + (rand() % (MAX_PER_RANK - MIN_PER_RANK + 1));
-//
-//      for (j=0; j<nodes; j++)
-//        for (k=0; k<new_nodes; k++)
-//          if ((rand() % 100) < PERCENT){
-//              //std::cout<<j<<std::endl;
-//              //printf ("  %d -> %d;\n", j, k + nodes); /* An Edge.  */
-//              //g.addNode(j, rand() % MAX_VALUE);
-//              //g.addNode(k + nodes, rand() % MAX_VALUE);
-//              g.addEdge(j, k + nodes);
-//          }
-//
-//      nodes += new_nodes; /* Accumulate into old node set.  */
-//    }
-//  std::cout << nodes << std::endl;
-//}
+void createGraphFromFile(std::string filename , Graph &g){
+  std::ifstream graph_file(filename , std::ifstream::in);
+  if(!graph_file.is_open()){
+    std::cout << "Can't open the file try again!" << std::endl;
+    exit(1);
+  }else{
+    std::string n;
+    std::getline(graph_file, n);
+    int num_nodes = std::stoi(n);
+    for(int i=0; i<num_nodes; i++){
+      g.addNode(rand() % MAX_VALUE);
+    }
+    int x;
+    int y;
+    while(graph_file >> x >> y){
+      g.addEdge(x,y);
+    }
+  }
+  graph_file.close();
+}
 
 void writeGraphImage(Graph &g, std::string filename){
   std::fstream f;
@@ -111,10 +100,6 @@ void writeGraphImage(Graph &g, std::string filename){
   f << "digraph {" << std::endl;
 
   for (int i=0; i<(int) nodes.size(); i++){
-    // if wanna display not connected nodes too add this for
-    // if(nodes[i].getDestination().size() < 1){
-    // f << nodes[i].getID() << ";" << std::endl;
-    // }
     for(auto x : nodes[i].getDestination()){
       f << nodes[i].getID() << " -> " << x->getID() << ";" << std::endl;
     }

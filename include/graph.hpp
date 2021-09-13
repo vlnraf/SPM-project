@@ -61,6 +61,8 @@ private:
 
 void generateRandomDAG(Graph &g, int N);
 void generateGraph(Graph &g);
+void writeRandomDAG(std::string filename, int N);
+void createGraphFromFile(std::string filename, Graph &g);
 void writeGraphImage(Graph &g, std::string filename);
 
 #endif

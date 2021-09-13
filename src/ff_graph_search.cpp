@@ -5,6 +5,9 @@
 #include "Utimer.hpp"
 #include <ff/ff.hpp>
 #include <ff/farm.hpp>
+
+#define MAX_NW 256
+
 using namespace ff;
 
 int Node::currID = 0; //Initialize the id for the graph
@@ -24,33 +27,8 @@ struct Emitter: ff_monode_t<std::vector<int>, W_output> {
       this->stage1 = true;
     }
     W_output* svc(std::vector<int> *task) {
-      //std::cout<<frontier.size()<<std::endl;
       int turn = 0;
       std::vector<std::queue<int>> fs(nw);
-      //if(stage1){
-      //  std::vector<Node*> tmp;
-      //  Node n = g[src];
-      //  visited[src] = true;
-      //  tmp = n.getDestination();
-      //  //aumentare il contatore se il valore 'e quello cercato
-      //  for(int i=0; i<(int) tmp.size(); i++){
-      //    frontier.push_back(tmp[i]->getID());
-      //    visited[tmp[i]->getID()] = true;
-      //  }
-      //  for(int i=0; i<(int) frontier.size(); i++){
-      //    fs[turn].push(frontier[i]);
-      //    visited[frontier[i]] = true;
-      //    //vis.insert(frontier[i]);
-      //    turn = (turn + 1) % nw;
-      //  }
-      //  for(int i=0; i<nw; i++){
-      //    W_output *out = new W_output;
-      //    out->local_queue = fs[i];
-      //    ff_send_out(out);
-      //  }
-      //  stage1=false;
-      //  //return GO_ON;
-      //}
       if(task == NULL){
         std::vector<int> tmp;
         tmp.push_back(src);
@@ -70,7 +48,6 @@ struct Emitter: ff_monode_t<std::vector<int>, W_output> {
       }else{
         frontier.swap(*task);
         task->clear();
-        //std::cout<<"Frontier Size: " << frontier.size()<<std::endl;
         for(int i=0; i<(int) frontier.size(); i++){
           fs[turn].push(frontier[i]);
           turn = (turn + 1) % nw;
@@ -81,7 +58,6 @@ struct Emitter: ff_monode_t<std::vector<int>, W_output> {
           ff_send_out(out);
         }
       }
-      //delete task;
       return GO_ON;
     }
 
@@ -107,9 +83,7 @@ struct Worker: ff_node_t<W_output> {
       std::queue<int> local_frontier = task->local_queue;
       std::queue<int> next_frontier;
       while(!local_frontier.empty()){
-        //std::cout<<local_frontier.front()<<std::endl;
         Node n = g[local_frontier.front()];
-        //std::cout<<local_frontier.size()<<std::endl;
         if(n.getValue() == this->value) partialCounter++;
         local_frontier.pop();
 
@@ -119,19 +93,18 @@ struct Worker: ff_node_t<W_output> {
             }
         }
       }
+      //level++;
+      //std::cout<<"level : " << level <<std::endl;
       W_output *out = new W_output;
       out->local_queue = next_frontier;
       out->local_sum = partialCounter;
-      //std::cout<<"th id: " << get_my_id() << "counted: " << partialCounter << std::endl;
       partialCounter = 0;
-      //std::queue<int> empty;
-      //next_frontier.swap(empty);
-      //delete task;
+      delete task;
       return out;
-      //return EOS;
     }
 
     int value;
+    int level = 0;
 };
 
 struct Collector: ff_minode_t<W_output, std::vector<int>> {
@@ -142,7 +115,6 @@ struct Collector: ff_minode_t<W_output, std::vector<int>> {
     }
 
     std::vector<int>* svc(W_output *task) { 
-      //std::cout<<task->local_sum<<std::endl;
       W_output t = *task;
       this->total_sum += t.local_sum;
       std::queue<int> tmp = t.local_queue;
@@ -154,10 +126,7 @@ struct Collector: ff_minode_t<W_output, std::vector<int>> {
         tmp.pop();
       }
       if(++ntasks == nw){
-        //std::cout<<"Total Sum : " << total_sum << std::endl;
-        //std::cout<<"Frontier Size: " << frontier.size()<<std::endl;
         if(frontier.empty()){
-          //std::cout<<"CIAO2"<<std::endl;
           return EOS;
         }
 
@@ -165,15 +134,10 @@ struct Collector: ff_minode_t<W_output, std::vector<int>> {
         delete task;
         return &frontier;
       }else{
-        //delete task;
+        delete task;
         return GO_ON;
       }
-      //return EOS;
     }
-
-  void svc_end(){
-    //frontier.clear();
-  }
 
     std::vector<int> frontier;
     int nw;
@@ -184,25 +148,30 @@ struct Collector: ff_minode_t<W_output, std::vector<int>> {
 
 int main(int argc, char* argv[]){
   if(argc < 2){
-    std::cerr << "To use the application this is the syntax : ./main [seed] [nodes in graph] [number of workers] [starting node] [value to count]" << std::endl;
+    std::cerr << "To use the application this is the syntax : ./main [path file] [starting node] [value to count] [number of workers]" << std::endl;
     return 1;
-  }else{
-    std::srand(std::atoi(argv[1]));
   }
-  int N = atoi(argv[2]);
-  int src = atoi(argv[3]);
-  int value = atoi(argv[4]);
-  int nw = atoi(argv[5]);
-  //std::atomic<int> count;
+
+  std::string graph_file= argv[1];
+  int src = std::atoi(argv[2]);
+  int value = std::atoi(argv[3]);
+  int nw = std::atoi(argv[4]);
+  if(nw == MAX_NW){
+    nw = nw -2;
+  }
 
   std::vector<int> frontier;
   //long sequential, parallel;
 
   {
     utimer t("graph gen");
-    generateRandomDAG(g, N);
+    //writeRandomDAG("graph_prova", N);
+    createGraphFromFile(graph_file, g);
+    //generateRandomDAG(g, N);
     //writeGraphImage(g, "../image_graph/image.gv");
   }
+  int N = g.getNodes().size();
+
   for(int i=0; i<N; i++){
     visited.push_back(false);
   }
