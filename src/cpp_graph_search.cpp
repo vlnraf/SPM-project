@@ -9,6 +9,9 @@
 //#define DEBUG
 
 std::mutex messagesLock;
+std::chrono::steady_clock::time_point start;
+std::chrono::steady_clock::time_point stop;
+
 
 #ifdef DEBUG
 #define DEBUG_MSG(str) messagesLock.lock(); std::cout << str << std::endl; messagesLock.unlock();
@@ -61,17 +64,28 @@ void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw, lo
     auto myjob = [&](std::vector<int> &frontier, int tid){
       {
         DEBUG_MSG("quque size of thread(" << tid << ") :" << fs[tid].size()<< "| Level : " << level);
-        while(!fs[tid].empty()){
-          Node n = g[fs[tid].front()];
-          if(n.getValue() == val) count++;
-          fs[tid].pop();
+        { 
+          start = std::chrono::steady_clock::now();
+          //messagesLock.lock();
+          //utimer worker_time("time of worker (" + std::to_string(tid) + ")");
+          //messagesLock.unlock();
+          while(!fs[tid].empty()){
+            Node n = g[fs[tid].front()];
+            if(n.getValue() == val) count++;
+            fs[tid].pop();
 
-          for(auto neighbor: n.getDestination()){
-            if(!visited[neighbor->getID()]){
-              ns[tid].push(neighbor->getID());
-              }
+            for(auto neighbor: n.getDestination()){
+              if(!visited[neighbor->getID()]){
+                ns[tid].push(neighbor->getID());
+                }
+            }
           }
         }
+        stop = std::chrono::steady_clock::now();
+        auto t = std::chrono::duration_cast<std::chrono::milliseconds>(stop-start).count();
+        messagesLock.lock();
+        std::cout << "Worker(" + std::to_string(tid) + ") time: " + std::to_string(t) + " ms" << std::endl;
+        messagesLock.unlock();
       }
     };
 
@@ -97,7 +111,8 @@ void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw, lo
       {
         //utimer te("emitter time: ");
 #if DEBUG
-        std::cout << "Frontier size: " << frontier.size() << std::endl;
+        DEBUG_MSG("Frontier size: " << frontier.size());
+        //std::cout << "Frontier size: " << frontier.size() << std::endl;
 #endif
         for(int i=0; i<(int) frontier.size(); i++){
           fs[turn].push(frontier[i]);
@@ -109,7 +124,9 @@ void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw, lo
 
       {
 #if DEBUG
+        messagesLock.lock();
         utimer worker("worker creation + worker time + worker join: ");
+        messagesLock.unlock();
 #endif
         for(int i=0; i<nw; i++){
           {
@@ -123,6 +140,7 @@ void parallelBFS(Graph &g, int src, int val, std::atomic<int> &count, int nw, lo
         for(std::thread& t: tids){
           t.join();
         }
+        std::cout << "------------------------------------------" << std::endl;
         level++;
       }
 
